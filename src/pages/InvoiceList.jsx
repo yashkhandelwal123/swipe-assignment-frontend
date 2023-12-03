@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import BulkEditModal from "../components/BulkEditModal.jsx";
 import { Button, Card, Col, Row, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { BiSolidPencil, BiTrash } from "react-icons/bi";
@@ -7,13 +8,94 @@ import InvoiceModal from "../components/InvoiceModal";
 import { useNavigate } from "react-router-dom";
 import { useInvoiceListData } from "../redux/hooks";
 import { useDispatch } from "react-redux";
-import { deleteInvoice } from "../redux/invoicesSlice";
+import { deleteInvoice } from "../redux/invoicesSlice.js";
+import {updateSelectedInvoicesAction } from "../redux/invoicesSlice";
+import { bulkUpdateInvoices } from "../redux/invoicesSlice";
+
 
 const InvoiceList = () => {
+  const dispatch = useDispatch();
+
+  //   const UPDATE_SELECTED_INVOICES = 'UPDATE_SELECTED_INVOICES';
+
+  //   const updateSelectedInvoicesAction = (invoices) => {
+  //     return {
+  //       type: UPDATE_SELECTED_INVOICES,
+  //       payload: invoices,
+  //     };
+  //   };
   const { invoiceList, getOneInvoice } = useInvoiceListData();
   const isListEmpty = invoiceList.length === 0;
   const [copyId, setCopyId] = useState("");
+  const [selectedInvoices, setSelectedInvoices] = useState([]);
   const navigate = useNavigate();
+  // const dispatch = useDispatch();
+  const [showModal, setShowModal] = useState(false);
+
+  
+
+  const handleBulkEdit = (updatedFields) => {
+
+    // const handleDeselectInvoice = (invoiceId) => {
+    //   setSelectedInvoices(selectedInvoices.filter(id => id !== invoiceId));
+
+      const updatedSelectedInvoices = selectedInvoices.map((invoice) => {
+      
+        return {
+          ...invoice,
+          billTo: updatedFields.billTo,
+          billFrom: updatedFields.billFrom,
+          itemName: updatedFields.itemName,
+
+        };
+      });
+  
+
+      dispatch(updateSelectedInvoicesAction(updatedSelectedInvoices));
+
+      closeModal();
+    };
+
+    // const selectedInvoicesData = invoiceList.filter((invoice) =>
+    //   selectedInvoices.includes(invoice.id)
+    // );
+    const handleBulkEditSubmit = (updatedInvoices) => {
+
+      dispatch(bulkUpdateInvoices(updatedInvoices));
+
+      // closeModal();
+    };
+
+ 
+  //   const updatedSelectedInvoices = selectedInvoicesData.map((invoice) => {
+  //     // Create a copy of the original invoice object
+  //     const updatedInvoice = { ...invoice };
+
+  //     // Modify specific fields or perform any desired action on each invoice
+  //     updatedInvoice.status = 'Processed';
+  //     // You can add more fields or modify existing ones as needed
+
+  //     // Return the modified invoice object
+  //     return updatedInvoice;
+  //   });
+
+  //   // Dispatch an action with the updated selected invoices
+  //   dispatch(updateSelectedInvoicesAction(updatedSelectedInvoices));
+
+  //   // Clear the selected invoices after performing the bulk edit operation
+  //   setSelectedInvoices([]);
+  // };
+
+
+
+  const handleSelectInvoice = (invoiceId) => {
+
+    if (selectedInvoices.includes(invoiceId)) {
+      setSelectedInvoices(selectedInvoices.filter((id) => id !== invoiceId));
+    } else {
+      setSelectedInvoices([...selectedInvoices, invoiceId]);
+    }
+  };
   const handleCopyClick = () => {
     const invoice = getOneInvoice(copyId);
     if (!invoice) {
@@ -22,6 +104,26 @@ const InvoiceList = () => {
       navigate(`/create/${copyId}`);
     }
   };
+
+  // const [showModal, setShowModal] = useState(false);
+
+// Function to open/close the modal
+  const openModal = () => {
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const selectedInvoicesData = invoiceList.filter(
+    (invoice) => selectedInvoices.includes(invoice.id)
+  );
+
+
+  // const BulkEdit = () =>{
+
+  // }
 
   return (
     <Row>
@@ -63,6 +165,7 @@ const InvoiceList = () => {
               <Table responsive>
                 <thead>
                   <tr>
+                    <th>Select</th>
                     <th>Invoice No.</th>
                     <th>Bill To</th>
                     <th>Due Date</th>
@@ -76,10 +179,39 @@ const InvoiceList = () => {
                       key={invoice.id}
                       invoice={invoice}
                       navigate={navigate}
+                      handleSelectInvoice={handleSelectInvoice} 
+                      selectedInvoices={selectedInvoices}
                     />
                   ))}
                 </tbody>
               </Table>
+              <Table responsive>
+        <thead>
+          {/* Table header */}
+        </thead>
+        <tbody>
+          {/* {invoiceList.map((invoice) => (
+            <InvoiceRow
+              key={invoice.id}
+              invoice={invoice}
+              navigate={navigate}
+              handleSelectInvoice={handleSelectInvoice} 
+              selectedInvoices={selectedInvoices} 
+            />
+          ))} */}
+        </tbody>
+
+        <BulkEditModal
+        showModal={showModal}
+        closeModal={closeModal}
+        selectedInvoicesData={selectedInvoicesData}
+        handleBulkEdit={handleBulkEdit}
+        onSubmit={handleBulkEditSubmit}
+      />
+      </Table>
+      <Button variant="primary" onClick={openModal}>
+        Bulk Edit
+      </Button>
             </div>
           )}
         </Card>
@@ -88,7 +220,7 @@ const InvoiceList = () => {
   );
 };
 
-const InvoiceRow = ({ invoice, navigate }) => {
+const InvoiceRow = ({ invoice, navigate, handleSelectInvoice, selectedInvoices }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
 
@@ -111,6 +243,13 @@ const InvoiceRow = ({ invoice, navigate }) => {
 
   return (
     <tr>
+      <td>
+        <input
+          type="checkbox"
+          onChange={() => handleSelectInvoice(invoice.id)} 
+          checked={selectedInvoices.includes(invoice.id)}
+        />
+      </td>
       <td>{invoice.invoiceNumber}</td>
       <td className="fw-normal">{invoice.billTo}</td>
       <td className="fw-normal">{invoice.dateOfIssue}</td>
@@ -139,6 +278,9 @@ const InvoiceRow = ({ invoice, navigate }) => {
           </div>
         </Button>
       </td>
+      {/* <Button variant="primary" >
+                Bulk Edit
+        </Button> */}
       <InvoiceModal
         showModal={isOpen}
         closeModal={closeModal}
@@ -170,7 +312,11 @@ const InvoiceRow = ({ invoice, navigate }) => {
         discountAmount={invoice.discountAmount}
         total={invoice.total}
       />
+      
     </tr>
+  //   <Button variant="primary" onClick={handleBulkEdit}>
+  //   Bulk Edit
+  // </Button>
   );
 };
 
