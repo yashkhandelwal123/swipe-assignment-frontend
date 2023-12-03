@@ -4,3 +4,13 @@
 
 <h1>Installation and Setup</h1>
 <td><li>Clone the Repository: https://github.com/yashkhandelwal123/swipe-assignment-frontend.github.io.git</li></td>
+<td><li>Setup Project Locally: cd redux-invoice-management-system 
+npm install</li></td>
+<td><li>Start Development Server: npm start</li></td>
+
+<h1>Project Structure Overview</h1>
+The project consists of the following key components:
+<li>src/components/: Contains React components for different functionalities.</li>
+<li>src/redux/: Manages Redux store, actions, reducers, and selectors.</li>
+<li>src/pages/: Defines different pages/routes of the application.</li>
+
