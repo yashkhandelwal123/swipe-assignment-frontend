@@ -14,3 +14,11 @@ The project consists of the following key components:
 <li>src/redux/: Manages Redux store, actions, reducers, and selectors.</li>
 <li>src/pages/: Defines different pages/routes of the application.</li>
 
+<h1>Implementation of Bulk Edit Feature</h1>
+
+<h3>Steps to Implement</h3>
+<li>Familiarize with the Existing Application Structure</li>
+<li>Create a New Button for Bulk Edit</li>
+<li>Design the Bulk Edit Interface</li>
+<li>Implement Bulk Edit Functionality</li>
+<li>Documentation and Code Quality</li>
