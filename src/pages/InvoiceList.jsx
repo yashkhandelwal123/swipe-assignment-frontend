@@ -60,7 +60,6 @@ const InvoiceList = () => {
     //   selectedInvoices.includes(invoice.id)
     // );
     const handleBulkEditSubmit = (updatedInvoices) => {
-
       dispatch(bulkUpdateInvoices(updatedInvoices));
 
       // closeModal();
