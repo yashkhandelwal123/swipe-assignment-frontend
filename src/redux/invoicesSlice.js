@@ -10,7 +10,24 @@ const invoicesSlice = createSlice({
   reducers: {
     bulkUpdateInvoices: (state, action) => {
       // const updatedInvoices = action.payload;
-      state.invoices = action.payload;
+      console.log(state.invoices, action);
+      action.payload.map(actionInvoice => {
+        const index = state.invoices.findIndex(
+          (invoice) => invoice.id === actionInvoice.id
+        );
+        console.log(index);
+        if (index !== -1) {
+          state.invoices[index] = actionInvoice.updatedInvoice;
+        }
+      })
+      // const index = state.invoices.findIndex(
+      //   (invoice) => invoice.id === action.payload.id
+      // );
+      // console.log(index);
+      // if (index !== -1) {
+      //   state[index] = action.payload.updatedInvoice;
+      // }
+      // state.invoices = action.payload;
     },
     updateSelectedInvoicesAction: (state, action) => {
       const updatedInvoices = action.payload;
@@ -32,6 +49,7 @@ const invoicesSlice = createSlice({
       return state.filter((invoice) => invoice.id !== action.payload);
     },
     updateInvoice: (state, action) => {
+      console.log(state, action);
       const index = state.findIndex(
         (invoice) => invoice.id === action.payload.id
       );

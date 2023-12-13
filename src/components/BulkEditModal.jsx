@@ -6,17 +6,25 @@ import Modal from "react-bootstrap/Modal";
 
 const BulkEditModal = ({ showModal, closeModal, selectedInvoicesData ,onSubmit}) => {
   const [selectedInvoices, setSelectedInvoices] = useState([]);
+  const [formData, setFormData] = useState({
+    billTo: "",
+    billFrom: "",
+    item: ""
+  });
   const [fields, setFields] = useState({}); 
 
   const handleSubmit = () => {
+    console.log(selectedInvoicesData);
     const updatedInvoices = selectedInvoicesData.map((invoice) => ({
       id: invoice.id,
-      billTo: invoice.billTo,
-      billFrom: invoice.billFrom, 
-      itemName: invoice.itemName, 
+      updatedInvoice: {
+      billTo: formData.billTo,
+      billFrom: formData.billFrom, 
+      itemName: formData.item}
 
     }));
-
+    // disp
+    console.log(updatedInvoices);
     onSubmit(updatedInvoices);
 
     closeModal();
@@ -41,13 +49,10 @@ const BulkEditModal = ({ showModal, closeModal, selectedInvoicesData ,onSubmit})
     }
   };
 
-  const handleFieldChange = (invoiceId, field, value) => {
-    setFields({
-      ...fields,
-      [invoiceId]: {
-        ...fields[invoiceId],
-        [field]: value
-      }
+  const editFields = (name, value) => {
+    setFormData({
+      ...formData,
+      [name]: value
     });
   };
 
@@ -85,8 +90,8 @@ const BulkEditModal = ({ showModal, closeModal, selectedInvoicesData ,onSubmit})
                   <input
                     type="text"
                     id={`billTo_${invoiceId}`}
-                    value={invoiceFields.billTo}
-                    onChange={(e) => handleFieldChange(invoiceId, 'billTo', e.target.value)}
+                    value={formData.billTo}
+                    onChange={(e) => editFields('billTo', e.target.value)}
                   />
                 </div>
                 <div>
@@ -94,8 +99,8 @@ const BulkEditModal = ({ showModal, closeModal, selectedInvoicesData ,onSubmit})
                   <input
                     type="text"
                     id={`billFrom_${invoiceId}`}
-                    value={invoiceFields.billFrom}
-                    onChange={(e) => handleFieldChange(invoiceId, 'billFrom', e.target.value)}
+                    value={formData.billFrom}
+                    onChange={(e) => editFields('billFrom', e.target.value)}
                   />
                 </div>
                 <div>
@@ -103,8 +108,8 @@ const BulkEditModal = ({ showModal, closeModal, selectedInvoicesData ,onSubmit})
                   <input
                     type="text"
                     id={`itemName_${invoiceId}`}
-                    value={invoiceFields.itemName}
-                    onChange={(e) => handleFieldChange(invoiceId, 'itemName', e.target.value)}
+                    value={formData.itemName}
+                    onChange={(e) => editFields('item', e.target.value)}
                   />
                 </div>
                 <hr />
